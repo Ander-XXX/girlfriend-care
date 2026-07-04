@@ -3,11 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>💊 头痛退散！</title>
-<!-- 微信/朋友圈分享预览 -->
-<meta property="og:title" content="💊 头痛退散！专属治愈小魔法">
+<title>🌸 君君宝宝，头痛退散！</title>
+<meta property="og:title" content="🌸 君君宝宝，专属治愈小魔法">
 <meta property="og:description" content="点一下，有惊喜哦～">
-<meta property="og:image" content="https://emojicdn.elk.sh/🤕💖?style=apple">
 <meta name="twitter:card" content="summary">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,7 +28,6 @@
   }
   .star {
     position: absolute;
-    background: white;
     border-radius: 50%;
     animation: twinkle var(--dur) ease-in-out infinite;
     animation-delay: var(--delay);
@@ -39,6 +36,23 @@
   @keyframes twinkle {
     0%, 100% { opacity: 0.2; transform: scale(1); }
     50% { opacity: 0.9; transform: scale(1.5); }
+  }
+
+  /* ===== 飘落的花瓣和爱心 ===== */
+  .falling-petal {
+    position: fixed; pointer-events: none; z-index: 0;
+    animation: petalFall var(--fall-dur) linear infinite;
+    animation-delay: var(--fall-delay);
+    font-size: var(--petal-size);
+    left: var(--petal-x);
+    top: -30px;
+    opacity: 0.7;
+  }
+  @keyframes petalFall {
+    0% { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0; }
+    5% { opacity: 0.7; }
+    90% { opacity: 0.5; }
+    100% { transform: translateY(105vh) rotate(var(--petal-rot)) translateX(var(--petal-drift)); opacity: 0; }
   }
 
   /* ===== 主容器 ===== */
@@ -82,6 +96,19 @@
     letter-spacing: 2px;
   }
 
+  /* ===== 爱心分隔线 ===== */
+  .heart-divider {
+    display: flex; align-items: center; gap: 10px;
+    animation: fadeInDown 0.8s ease-out 0.15s both;
+  }
+  .heart-divider span {
+    font-size: 12px; animation: heartbeat 1.2s ease-in-out infinite;
+  }
+  .heart-divider span:nth-child(2) { animation-delay: 0.2s; }
+  .heart-divider span:nth-child(3) { animation-delay: 0.4s; }
+  .heart-divider span:nth-child(4) { animation-delay: 0.6s; }
+  .heart-divider span:nth-child(5) { animation-delay: 0.8s; }
+
   /* ===== 关爱卡片区 ===== */
   .section-title {
     font-size: 15px; color: #a09080; letter-spacing: 1px;
@@ -119,7 +146,6 @@
   .care-card .label {
     font-size: 14px; color: #c0a890; font-weight: 500;
   }
-  /* 波纹效果 */
   .care-card .ripple {
     position: absolute; border-radius: 50%;
     background: rgba(255, 200, 200, 0.3);
@@ -202,18 +228,26 @@
 <!-- 星空 -->
 <div class="stars-container" id="stars"></div>
 
+<!-- 飘落花瓣 + 爱心 -->
+<div id="fallingPetals"></div>
+
 <!-- 主内容 -->
 <div class="main">
 
   <!-- 顶部 -->
   <div class="hero">
-    <span class="hero-emoji">🤕💖</span>
-    <h1>宝贝头痛快走开</h1>
+    <span class="hero-emoji">🌸💖</span>
+    <h1>君君宝宝，头痛快走开</h1>
     <p class="sub">✦ 点一点下面的小魔法 ✦</p>
   </div>
 
+  <!-- 爱心分隔线 -->
+  <div class="heart-divider">
+    <span>💕</span><span>🌸</span><span>💗</span><span>🌷</span><span>💝</span>
+  </div>
+
   <!-- 关爱按钮 -->
-  <p class="section-title">👇 选一个我能为你做的事</p>
+  <p class="section-title">👇 选一个我能为宝宝做的</p>
   <div class="care-grid" id="careGrid">
     <div class="care-card" data-action="hug">
       <span class="icon">🤗</span>
@@ -243,9 +277,10 @@
 
   <!-- 底部 -->
   <div class="footer-msg">
-    <p>不管多远，我的心都在你身边 <span class="heartbeat">❤️</span></p>
+    <p>不管多远，我的心都在宝宝身边 <span class="heartbeat">❤️</span></p>
     <p>好好休息，睡一觉就好了~</p>
-    <p style="margin-top:8px; font-size:12px; color:#504840;">—— 爱你的人</p>
+    <p>君君是世界上最好的宝宝 🌸</p>
+    <p style="margin-top:8px; font-size:12px; color:#504840;">—— 永远爱你的我 💕</p>
   </div>
 </div>
 
@@ -259,22 +294,53 @@
 </div>
 
 <script>
-// ===== 生成星空 =====
+// ===== 生成星空（爱心和星星混搭）=====
 (function createStars() {
   const container = document.getElementById('stars');
-  const count = 80;
+  const stars = ['✦', '✧', '⭑', '·', '♥', '♡'];
+  const count = 100;
   let html = '';
   for (let i = 0; i < count; i++) {
-    const size = Math.random() * 2.5 + 1;
+    const isStar = Math.random() > 0.3; // 70% 星星, 30% 爱心
+    const char = isStar ? stars[Math.floor(Math.random() * 4)] : stars[4 + Math.floor(Math.random() * 2)];
+    const size = Math.random() * 3 + 1.5;
     const x = Math.random() * 100;
     const y = Math.random() * 100;
     const dur = Math.random() * 3 + 2;
     const delay = Math.random() * 4;
+    const color = isStar ? 'white' : (Math.random() > 0.5 ? '#ffb7c5' : '#f8c8d8');
     html += `<div class="star" style="
       width:${size}px; height:${size}px;
       left:${x}%; top:${y}%;
       --dur:${dur}s; --delay:${delay}s;
+      background:${color};
     "></div>`;
+  }
+  container.innerHTML = html;
+})();
+
+// ===== 飘落花瓣和爱心 =====
+(function createFallingPetals() {
+  const container = document.getElementById('fallingPetals');
+  const petals = ['🌸', '💕', '🌷', '💖', '🌺', '💗', '🌻', '💝', '🌹', '💐', '🩷', '🍀'];
+  const count = 25;
+  let html = '';
+  for (let i = 0; i < count; i++) {
+    const petal = petals[Math.floor(Math.random() * petals.length)];
+    const size = Math.random() * 14 + 12;
+    const x = Math.random() * 100;
+    const dur = Math.random() * 10 + 12;
+    const delay = Math.random() * 15;
+    const rot = Math.random() * 720 - 360;
+    const drift = (Math.random() - 0.5) * 120;
+    html += `<span class="falling-petal" style="
+      --petal-size:${size}px;
+      --petal-x:${x}%;
+      --fall-dur:${dur}s;
+      --fall-delay:${delay}s;
+      --petal-rot:${rot}deg;
+      --petal-drift:${drift}px;
+    ">${petal}</span>`;
   }
   container.innerHTML = html;
 })();
@@ -282,34 +348,34 @@
 // ===== 关爱卡片数据 =====
 const messages = {
   hug: {
-    emoji: '🤗✨',
-    msg: '一个大大的熊抱！',
-    sub: '把所有的温暖都传递给你～'
+    emoji: '🤗💕',
+    msg: '一个大大的熊抱给君君宝宝！',
+    sub: '把所有温暖都传递给你～'
   },
   tea: {
     emoji: '🍵💛',
     msg: '一杯热乎乎的蜂蜜柠檬茶',
-    sub: '小心烫，慢慢喝哦～'
+    sub: '宝宝小心烫，慢慢喝哦～'
   },
   massage: {
-    emoji: '💆‍♀️💕',
-    msg: '轻轻帮你揉揉太阳穴',
+    emoji: '💆‍♀️🌸',
+    msg: '轻轻帮宝宝揉揉太阳穴',
     sub: '闭上眼睛，放松～放松～'
   },
   story: {
     emoji: '📖🌙',
-    msg: '从前有一只小兔子...',
-    sub: '它最爱的人正在看这段话 💤'
+    msg: '从前有一只可爱的君君宝宝...',
+    sub: '她正在看这段话，然后笑了 💤'
   },
   song: {
-    emoji: '🎵🎶',
-    msg: '🎤 你是我的小呀小苹果～',
-    sub: '...好吧我唱歌不太好听，但心意是真的！'
+    emoji: '🎵💗',
+    msg: '🎤 就这样爱着你～全部都是你～',
+    sub: '...跑调了但心意是真的！'
   },
   blanket: {
-    emoji: '🛋️🌙',
+    emoji: '🛋️🌷',
     msg: '毯子盖好了，被子也掖好了',
-    sub: '现在你是全世界最温暖的宝宝～'
+    sub: '君君宝宝是全世界最温暖的宝宝～'
   }
 };
 
@@ -357,17 +423,16 @@ function closeToast() {
 }
 overlay.addEventListener('click', closeToast);
 toast.addEventListener('click', function(e) {
-  // 点击弹窗内部也飘特效
   spawnParticles(toast, 8);
   closeToast();
 });
 
-// ===== 飘落粒子 =====
+// ===== 飘落粒子（爱心 + 花为主）=====
 function spawnParticles(source, count = 15) {
   const rect = source.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
-  const emojis = ['💕', '✨', '💖', '🌸', '💗', '🩷', '💝', '🌷', '🧸', '💫'];
+  const emojis = ['💕', '🌸', '💖', '🌷', '💗', '🌺', '💝', '🌹', '🩷', '💐'];
 
   for (let i = 0; i < count; i++) {
     const el = document.createElement('span');
@@ -383,7 +448,7 @@ function spawnParticles(source, count = 15) {
   }
 }
 
-// ===== 3秒自动飘一颗心 =====
+// ===== 定时自动飘爱心和花 =====
 setInterval(() => {
   const fakeSource = {
     getBoundingClientRect: () => ({
@@ -392,8 +457,8 @@ setInterval(() => {
       width: 40, height: 40
     })
   };
-  spawnParticles(fakeSource, 3);
-}, 6000);
+  spawnParticles(fakeSource, 4);
+}, 5000);
 </script>
 
 </body>
