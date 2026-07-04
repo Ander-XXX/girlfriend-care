@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>💊 头痛退散！</title>
+<!-- 微信/朋友圈分享预览 -->
+<meta property="og:title" content="💊 头痛退散！专属治愈小魔法">
+<meta property="og:description" content="点一下，有惊喜哦～">
+<meta property="og:image" content="https://emojicdn.elk.sh/🤕💖?style=apple">
+<meta name="twitter:card" content="summary">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: #e8d5c4;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    position: relative;
+  }
+
+  /* ===== 星空背景 ===== */
+  .stars-container {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+  }
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--dur) ease-in-out infinite;
+    animation-delay: var(--delay);
+    opacity: 0;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.5); }
+  }
+
+  /* ===== 主容器 ===== */
+  .main {
+    position: relative; z-index: 1;
+    max-width: 420px; margin: 0 auto;
+    padding: 40px 24px 60px;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 28px;
+  }
+
+  /* ===== 顶部头像区域 ===== */
+  .hero {
+    text-align: center;
+    animation: fadeInDown 0.8s ease-out;
+  }
+  .hero-emoji {
+    font-size: 80px;
+    animation: gentleBounce 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(255, 183, 197, 0.3));
+    display: block;
+  }
+  @keyframes gentleBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero h1 {
+    font-size: 28px; font-weight: 700;
+    background: linear-gradient(135deg, #f8c8d8, #e8b4c8, #fad0c4);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-top: 12px;
+  }
+  .hero .sub {
+    font-size: 14px; color: #a09080; margin-top: 6px;
+    letter-spacing: 2px;
+  }
+
+  /* ===== 关爱卡片区 ===== */
+  .section-title {
+    font-size: 15px; color: #a09080; letter-spacing: 1px;
+    text-align: center; animation: fadeInDown 0.8s ease-out 0.2s both;
+  }
+
+  .care-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    width: 100%;
+    animation: fadeInDown 0.8s ease-out 0.3s both;
+  }
+  .care-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 24px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+  }
+  .care-card:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .care-card .icon {
+    font-size: 40px; display: block; margin-bottom: 8px;
+    transition: transform 0.3s;
+  }
+  .care-card:active .icon { transform: scale(1.2); }
+  .care-card .label {
+    font-size: 14px; color: #c0a890; font-weight: 500;
+  }
+  /* 波纹效果 */
+  .care-card .ripple {
+    position: absolute; border-radius: 50%;
+    background: rgba(255, 200, 200, 0.3);
+    transform: scale(0); animation: ripple 0.6s ease-out;
+    pointer-events: none;
+  }
+  @keyframes ripple {
+    to { transform: scale(4); opacity: 0; }
+  }
+
+  /* ===== 消息弹窗 ===== */
+  .toast {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: rgba(40, 30, 40, 0.95);
+    border: 1px solid rgba(255, 200, 200, 0.3);
+    border-radius: 24px;
+    padding: 32px 28px;
+    text-align: center;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(255,180,200,0.15);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-width: 300px;
+  }
+  .toast.show { transform: translate(-50%, -50%) scale(1); }
+  .toast .big-emoji { font-size: 60px; display: block; margin-bottom: 12px; }
+  .toast .msg { font-size: 18px; line-height: 1.6; color: #e8d5c4; }
+  .toast .sub-msg { font-size: 13px; color: #a09080; margin-top: 6px; }
+
+  .overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 99;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  .overlay.active { opacity: 1; pointer-events: auto; }
+
+  /* ===== 飘落特效 ===== */
+  .float-particle {
+    position: fixed; pointer-events: none; z-index: 50;
+    font-size: var(--size);
+    animation: floatUp var(--dur) ease-out forwards;
+    left: var(--x);
+  }
+  @keyframes floatUp {
+    0% { opacity: 1; transform: translateY(0) rotate(0deg) scale(0); }
+    20% { opacity: 1; transform: translateY(-20px) rotate(20deg) scale(1); }
+    100% { opacity: 0; transform: translateY(-200px) rotate(var(--rot)) scale(0.3); }
+  }
+
+  /* ===== 底部暖心语 ===== */
+  .footer-msg {
+    text-align: center; animation: fadeInDown 0.8s ease-out 0.5s both;
+  }
+  .footer-msg p {
+    font-size: 13px; color: #706058; line-height: 1.8;
+  }
+  .footer-msg .heartbeat {
+    display: inline-block; animation: heartbeat 1.2s ease-in-out infinite;
+    color: #e8879a; font-size: 16px;
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.3); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.3); }
+  }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 360px) {
+    .hero-emoji { font-size: 60px; }
+    .hero h1 { font-size: 24px; }
+    .care-card { padding: 18px 12px; }
+    .care-card .icon { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 星空 -->
+<div class="stars-container" id="stars"></div>
+
+<!-- 主内容 -->
+<div class="main">
+
+  <!-- 顶部 -->
+  <div class="hero">
+    <span class="hero-emoji">🤕💖</span>
+    <h1>宝贝头痛快走开</h1>
+    <p class="sub">✦ 点一点下面的小魔法 ✦</p>
+  </div>
+
+  <!-- 关爱按钮 -->
+  <p class="section-title">👇 选一个我能为你做的事</p>
+  <div class="care-grid" id="careGrid">
+    <div class="care-card" data-action="hug">
+      <span class="icon">🤗</span>
+      <span class="label">远程抱抱</span>
+    </div>
+    <div class="care-card" data-action="tea">
+      <span class="icon">🍵</span>
+      <span class="label">泡杯热茶</span>
+    </div>
+    <div class="care-card" data-action="massage">
+      <span class="icon">💆‍♀️</span>
+      <span class="label">头部按摩</span>
+    </div>
+    <div class="care-card" data-action="story">
+      <span class="icon">📖</span>
+      <span class="label">讲个故事</span>
+    </div>
+    <div class="care-card" data-action="song">
+      <span class="icon">🎵</span>
+      <span class="label">唱首歌</span>
+    </div>
+    <div class="care-card" data-action="blanket">
+      <span class="icon">🛋️</span>
+      <span class="label">盖好毯子</span>
+    </div>
+  </div>
+
+  <!-- 底部 -->
+  <div class="footer-msg">
+    <p>不管多远，我的心都在你身边 <span class="heartbeat">❤️</span></p>
+    <p>好好休息，睡一觉就好了~</p>
+    <p style="margin-top:8px; font-size:12px; color:#504840;">—— 爱你的人</p>
+  </div>
+</div>
+
+<!-- 弹窗遮罩 -->
+<div class="overlay" id="overlay"></div>
+<!-- 弹窗 -->
+<div class="toast" id="toast">
+  <span class="big-emoji" id="toastEmoji"></span>
+  <p class="msg" id="toastMsg"></p>
+  <p class="sub-msg" id="toastSub"></p>
+</div>
+
+<script>
+// ===== 生成星空 =====
+(function createStars() {
+  const container = document.getElementById('stars');
+  const count = 80;
+  let html = '';
+  for (let i = 0; i < count; i++) {
+    const size = Math.random() * 2.5 + 1;
+    const x = Math.random() * 100;
+    const y = Math.random() * 100;
+    const dur = Math.random() * 3 + 2;
+    const delay = Math.random() * 4;
+    html += `<div class="star" style="
+      width:${size}px; height:${size}px;
+      left:${x}%; top:${y}%;
+      --dur:${dur}s; --delay:${delay}s;
+    "></div>`;
+  }
+  container.innerHTML = html;
+})();
+
+// ===== 关爱卡片数据 =====
+const messages = {
+  hug: {
+    emoji: '🤗✨',
+    msg: '一个大大的熊抱！',
+    sub: '把所有的温暖都传递给你～'
+  },
+  tea: {
+    emoji: '🍵💛',
+    msg: '一杯热乎乎的蜂蜜柠檬茶',
+    sub: '小心烫，慢慢喝哦～'
+  },
+  massage: {
+    emoji: '💆‍♀️💕',
+    msg: '轻轻帮你揉揉太阳穴',
+    sub: '闭上眼睛，放松～放松～'
+  },
+  story: {
+    emoji: '📖🌙',
+    msg: '从前有一只小兔子...',
+    sub: '它最爱的人正在看这段话 💤'
+  },
+  song: {
+    emoji: '🎵🎶',
+    msg: '🎤 你是我的小呀小苹果～',
+    sub: '...好吧我唱歌不太好听，但心意是真的！'
+  },
+  blanket: {
+    emoji: '🛋️🌙',
+    msg: '毯子盖好了，被子也掖好了',
+    sub: '现在你是全世界最温暖的宝宝～'
+  }
+};
+
+// ===== 点击卡片 =====
+const overlay = document.getElementById('overlay');
+const toast = document.getElementById('toast');
+const toastEmoji = document.getElementById('toastEmoji');
+const toastMsg = document.getElementById('toastMsg');
+const toastSub = document.getElementById('toastSub');
+
+document.getElementById('careGrid').addEventListener('click', function(e) {
+  const card = e.target.closest('.care-card');
+  if (!card) return;
+
+  const action = card.dataset.action;
+  const data = messages[action];
+  if (!data) return;
+
+  // 波纹效果
+  const ripple = document.createElement('span');
+  ripple.className = 'ripple';
+  const rect = card.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  ripple.style.width = ripple.style.height = size + 'px';
+  ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+  ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+  card.appendChild(ripple);
+  ripple.addEventListener('animationend', () => ripple.remove());
+
+  // 显示弹窗
+  toastEmoji.textContent = data.emoji;
+  toastMsg.textContent = data.msg;
+  toastSub.textContent = data.sub;
+  overlay.classList.add('active');
+  toast.classList.add('show');
+
+  // 飘落特效
+  spawnParticles(card);
+});
+
+// ===== 关闭弹窗 =====
+function closeToast() {
+  overlay.classList.remove('active');
+  toast.classList.remove('show');
+}
+overlay.addEventListener('click', closeToast);
+toast.addEventListener('click', function(e) {
+  // 点击弹窗内部也飘特效
+  spawnParticles(toast, 8);
+  closeToast();
+});
+
+// ===== 飘落粒子 =====
+function spawnParticles(source, count = 15) {
+  const rect = source.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const emojis = ['💕', '✨', '💖', '🌸', '💗', '🩷', '💝', '🌷', '🧸', '💫'];
+
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('span');
+    el.className = 'float-particle';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.setProperty('--x', (cx + (Math.random() - 0.5) * 160) + 'px');
+    el.style.setProperty('--dur', (Math.random() * 1.5 + 1.5) + 's');
+    el.style.setProperty('--size', (Math.random() * 20 + 16) + 'px');
+    el.style.setProperty('--rot', (Math.random() * 120 - 60) + 'deg');
+    el.style.top = cy + 'px';
+    document.body.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+}
+
+// ===== 3秒自动飘一颗心 =====
+setInterval(() => {
+  const fakeSource = {
+    getBoundingClientRect: () => ({
+      left: Math.random() * window.innerWidth * 0.8 + window.innerWidth * 0.1,
+      top: Math.random() * window.innerHeight * 0.6 + window.innerHeight * 0.2,
+      width: 40, height: 40
+    })
+  };
+  spawnParticles(fakeSource, 3);
+}, 6000);
+</script>
+
+</body>
+</html>
