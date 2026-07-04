@@ -328,12 +328,13 @@
   <p class="music-title">🌸 鲜花</p>
   <p class="music-artist">回春丹</p>
   <iframe id="musicFrame" frameborder="no" border="0" marginwidth="0" marginheight="0"
-    width="280" height="86"
+    width="280" height="158"
     src=""
-    style="display:none;">
+    allowfullscreen
+    style="display:none; border-radius:12px;">
   </iframe>
   <div id="musicLoading" style="padding:16px; color:#a09080; font-size:14px;">🎶 正在加载...</div>
-  <p class="music-note">「我的心啊我的心，整栋出租<br/>处处都给你，种好的鲜花」</p>
+  <p class="music-note">「我的心啊我的心，整栋出租<br/>处处都给你，种好的鲜花」<br/><span style="font-size:11px;color:#504840;">乐队的夏天3 · 现场版</span></p>
 </div>
 
 <script>
@@ -480,7 +481,7 @@ overlay.addEventListener('click', function() {
 const musicToast = document.getElementById('musicToast');
 const musicFrame = document.getElementById('musicFrame');
 const musicLoading = document.getElementById('musicLoading');
-const NETEASE_SONG_ID = '2088079571';
+const BILI_BVID = 'BV178411k7Nn';
 let musicLoaded = false;
 
 function showMusicPlayer(source) {
@@ -489,7 +490,7 @@ function showMusicPlayer(source) {
 
   if (!musicLoaded) {
     setTimeout(() => {
-      musicFrame.src = 'https://music.163.com/outchain/player?type=2&id=' + NETEASE_SONG_ID + '&auto=0&height=66';
+      musicFrame.src = '//player.bilibili.com/player.html?bvid=' + BILI_BVID + '&autoplay=0&danmaku=0';
       musicFrame.style.display = 'block';
       musicLoading.style.display = 'none';
       musicLoaded = true;
