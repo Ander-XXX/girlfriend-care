@@ -183,6 +183,36 @@
   }
   .overlay.active { opacity: 1; pointer-events: auto; }
 
+  /* ===== 音乐播放器弹窗 ===== */
+  .music-toast {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: rgba(40, 30, 40, 0.95);
+    border: 1px solid rgba(255, 200, 200, 0.3);
+    border-radius: 24px;
+    padding: 24px 20px 20px;
+    text-align: center;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(255,180,200,0.15);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    width: 320px;
+  }
+  .music-toast.show { transform: translate(-50%, -50%) scale(1); }
+  .music-toast .music-title {
+    font-size: 16px; color: #f0c8d8; margin-bottom: 4px; font-weight: 600;
+  }
+  .music-toast .music-artist {
+    font-size: 13px; color: #a09080; margin-bottom: 16px;
+  }
+  .music-toast iframe {
+    border-radius: 12px; display: block; margin: 0 auto;
+  }
+  .music-toast .music-note {
+    font-size: 12px; color: #706058; margin-top: 12px;
+    line-height: 1.6;
+  }
+
   /* ===== 飘落特效 ===== */
   .float-particle {
     position: fixed; pointer-events: none; z-index: 50;
@@ -266,8 +296,8 @@
       <span class="label">讲个故事</span>
     </div>
     <div class="care-card" data-action="song">
-      <span class="icon">🎵</span>
-      <span class="label">唱首歌</span>
+      <span class="icon">🌸</span>
+      <span class="label">送你一首鲜花</span>
     </div>
     <div class="care-card" data-action="blanket">
       <span class="icon">🛋️</span>
@@ -291,6 +321,19 @@
   <span class="big-emoji" id="toastEmoji"></span>
   <p class="msg" id="toastMsg"></p>
   <p class="sub-msg" id="toastSub"></p>
+</div>
+
+<!-- 音乐播放器弹窗 -->
+<div class="music-toast" id="musicToast">
+  <p class="music-title">🌸 鲜花</p>
+  <p class="music-artist">回春丹</p>
+  <iframe id="musicFrame" frameborder="no" border="0" marginwidth="0" marginheight="0"
+    width="280" height="86"
+    src=""
+    style="display:none;">
+  </iframe>
+  <div id="musicLoading" style="padding:16px; color:#a09080; font-size:14px;">🎶 正在加载...</div>
+  <p class="music-note">「我的心啊我的心，整栋出租<br/>处处都给你，种好的鲜花」</p>
 </div>
 
 <script>
@@ -368,9 +411,10 @@ const messages = {
     sub: '她正在看这段话，然后笑了 💤'
   },
   song: {
-    emoji: '🎵💗',
-    msg: '🎤 就这样爱着你～全部都是你～',
-    sub: '...跑调了但心意是真的！'
+    emoji: '🌸🎸',
+    msg: '回春丹 —《鲜花》',
+    sub: '点一下听歌，送给君君宝宝 💐',
+    isMusic: true
   },
   blanket: {
     emoji: '🛋️🌷',
@@ -405,7 +449,13 @@ document.getElementById('careGrid').addEventListener('click', function(e) {
   card.appendChild(ripple);
   ripple.addEventListener('animationend', () => ripple.remove());
 
-  // 显示弹窗
+  // 音乐卡片特殊处理
+  if (data.isMusic) {
+    showMusicPlayer(card);
+    return;
+  }
+
+  // 显示普通弹窗
   toastEmoji.textContent = data.emoji;
   toastMsg.textContent = data.msg;
   toastSub.textContent = data.sub;
@@ -421,10 +471,45 @@ function closeToast() {
   overlay.classList.remove('active');
   toast.classList.remove('show');
 }
-overlay.addEventListener('click', closeToast);
-toast.addEventListener('click', function(e) {
-  spawnParticles(toast, 8);
+overlay.addEventListener('click', function() {
   closeToast();
+  closeMusicPlayer();
+});
+
+// ===== 音乐播放器 =====
+const musicToast = document.getElementById('musicToast');
+const musicFrame = document.getElementById('musicFrame');
+const musicLoading = document.getElementById('musicLoading');
+const NETEASE_SONG_ID = '2088079571';
+let musicLoaded = false;
+
+function showMusicPlayer(source) {
+  overlay.classList.add('active');
+  musicToast.classList.add('show');
+
+  if (!musicLoaded) {
+    setTimeout(() => {
+      musicFrame.src = 'https://music.163.com/outchain/player?type=2&id=' + NETEASE_SONG_ID + '&auto=0&height=66';
+      musicFrame.style.display = 'block';
+      musicLoading.style.display = 'none';
+      musicLoaded = true;
+    }, 400);
+  }
+
+  // 大量鲜花特效！
+  spawnParticles(source, 25);
+  setTimeout(() => spawnParticles(source, 15), 800);
+  setTimeout(() => spawnParticles(source, 20), 1600);
+}
+
+function closeMusicPlayer() {
+  musicToast.classList.remove('show');
+}
+
+musicToast.addEventListener('click', function(e) {
+  spawnParticles(musicToast, 12);
+  closeMusicPlayer();
+  overlay.classList.remove('active');
 });
 
 // ===== 飘落粒子（爱心 + 花为主）=====
